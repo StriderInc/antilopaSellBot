@@ -13,6 +13,7 @@ from keyboards import (
     get_console_keyboard_with_back
 )
 from models import OurProductData, validate_amount
+from services.google_sheets import GoogleSheetsService
 
 router = Router()
 
@@ -280,14 +281,33 @@ async def confirm_our_product(callback: CallbackQuery, state: FSMContext):
             username=callback.from_user.username
         )
         
-        # TODO: Здесь будет интеграция с Antilopay API и Google Sheets
-        
-        success_text = (
-            "✅ <b>Заказ успешно создан!</b>\n\n"
-            f"💰 <b>Сумма:</b> {product_data.amount:.2f} ₽\n"
-            "Ссылка на оплату будет отправлена менеджеру.\n"
-            "Данные записаны в таблицу."
+        # Интеграция с Google Sheets
+        sheets_service = GoogleSheetsService()
+        success = sheets_service.add_product_sale_record(
+            game_name=product_data.game_name,
+            console=product_data.console,
+            position=product_data.position,
+            ps_login=product_data.ps_login,
+            comment=product_data.comment,
+            amount=product_data.amount,
+            timestamp=product_data.created_at
         )
+        
+        # Проверяем результат записи в таблицу
+        if success:
+            success_text = (
+                "✅ <b>Заказ успешно создан!</b>\n\n"
+                f"💰 <b>Сумма:</b> {product_data.amount:.2f} ₽\n"
+                "Ссылка на оплату будет отправлена менеджеру.\n"
+                "✅ Данные записаны в таблицу."
+            )
+        else:
+            success_text = (
+                "⚠️ <b>Заказ создан с предупреждением</b>\n\n"
+                f"💰 <b>Сумма:</b> {product_data.amount:.2f} ₽\n"
+                "Ссылка на оплату будет отправлена менеджеру.\n"
+                "❌ Ошибка записи в таблицу - обратитесь к менеджеру."
+            )
         
         await callback.message.edit_text(
             success_text,

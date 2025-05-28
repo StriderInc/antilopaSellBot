@@ -5,6 +5,7 @@ from aiogram.fsm.context import FSMContext
 from states import FreeSaleStates
 from keyboards import get_confirmation_keyboard, get_cancel_keyboard, get_back_to_main_keyboard, get_cancel_and_back_keyboard
 from models import FreeSaleData, validate_amount
+from services.google_sheets import GoogleSheetsService
 
 router = Router()
 
@@ -212,13 +213,29 @@ async def confirm_free_sale(callback: CallbackQuery, state: FSMContext):
         
         # TODO: Здесь будет интеграция с Antilopay API и Google Sheets
         
-        success_text = (
-            "✅ <b>Заказ успешно создан!</b>\n\n"
-            f"💰 <b>Сумма:</b> {sale_data.amount:.2f} ₽\n"
-            "Ссылка на оплату будет отправлена менеджеру.\n"
-            "Данные записаны в таблицу."
+        sheets_service = GoogleSheetsService()
+        success = sheets_service.add_free_sale_record(
+            service_name=sale_data.service_name,
+            client_login=sale_data.client_login,
+            comment=sale_data.comment,
+            amount=sale_data.amount,
+            timestamp=sale_data.created_at
         )
         
+        if success:
+            success_text = (
+                "✅ <b>Заказ успешно создан!</b>\n\n"
+            f"💰 <b>Сумма:</b> {sale_data.amount:.2f} ₽\n"
+                "Ссылка на оплату будет отправлена менеджеру.\n"
+                "Данные записаны в таблицу."
+            )
+        else:
+            success_text = (
+                "⚠️ <b>Заказ создан с предупреждением</b>\n\n"
+                f"💰 <b>Сумма:</b> {sale_data.amount:.2f} ₽\n"
+                "Ссылка на оплату будет отправлена менеджеру.\n"
+                "❌ Ошибка записи в таблицу - обратитесь к менеджеру."
+            )
         await callback.message.edit_text(
             success_text,
             reply_markup=get_back_to_main_keyboard(),
