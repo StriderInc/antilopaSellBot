@@ -72,4 +72,23 @@ async def back_to_main_after_sale(callback: CallbackQuery, state: FSMContext):
         reply_markup=get_main_menu_keyboard(),
         parse_mode="HTML"
     )
-    await callback.answer() 
+    await callback.answer()
+
+
+@router.callback_query(F.data == "cancel")
+async def cancel_operation(callback: CallbackQuery, state: FSMContext):
+    """Отмена текущей операции"""
+    await state.clear()
+    
+    text = (
+        "❌ <b>Операция отменена</b>\n\n"
+        "🧑🏿‍🦽‍➡️ <b>Hello PS Store x Antilopay</b>\n\n"
+        "Выберите тип продажи:"
+    )
+    
+    await callback.message.edit_text(
+        text,
+        reply_markup=get_main_menu_keyboard(),
+        parse_mode="HTML"
+    )
+    await callback.answer("Операция отменена") 
