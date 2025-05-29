@@ -1,6 +1,7 @@
-# Hello Bot x Antilopay
+# Hello PS Store x Antilopay
 
 Telegram-бот для управления продажами с интеграцией Antilopay и Google Sheets.
+@hello_ps_store_pay_bot
 
 ## 🚀 Быстрый старт
 
@@ -99,4 +100,4 @@ src/
 
 ## 📝 Лицензия
 
-Проект разработан для Hello Bot x Antilopay.
+Проект разработан для Hello PS Store x Antilopay.
