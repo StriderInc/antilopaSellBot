@@ -8,8 +8,9 @@ BOT_TOKEN = os.getenv('BOT_TOKEN')
 
 # Antilopay API настройки
 ANTILOPAY_API_URL = os.getenv('ANTILOPAY_API_URL', 'https://api.antilopay.com')
-ANTILOPAY_MERCHANT_ID = os.getenv('ANTILOPAY_MERCHANT_ID')
-ANTILOPAY_SECRET_KEY = os.getenv('ANTILOPAY_SECRET_KEY')
+ANTILOPAY_SECRET_ID = os.getenv('ANTILOPAY_SECRET_ID')
+ANTILOPAY_PRIVATE_KEY = os.getenv('ANTILOPAY_PRIVATE_KEY')
+ANTILOPAY_PROJECT_ID = os.getenv('ANTILOPAY_PROJECT_ID')
 
 # Google Sheets настройки
 GOOGLE_CREDENTIALS_FILE = os.getenv('GOOGLE_CREDENTIALS_FILE', 'credentials.json')
