@@ -8,6 +8,8 @@ class FreeSaleStates(StatesGroup):
     waiting_comment = State()
     waiting_amount = State()
     confirmation = State()
+    payment_method_selection = State()
+    final_confirmation = State()
 
 
 class OurProductStates(StatesGroup):
@@ -18,4 +20,6 @@ class OurProductStates(StatesGroup):
     waiting_ps_login = State()
     waiting_comment = State()
     waiting_amount = State()
-    confirmation = State() 
+    confirmation = State()
+    payment_method_selection = State()
+    final_confirmation = State() 
