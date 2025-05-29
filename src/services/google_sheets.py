@@ -82,7 +82,7 @@ class GoogleSheetsService:
             return None
     
     def add_free_sale_record(self, service_name: str, client_login: str, 
-                           comment: str, amount: float, timestamp: datetime) -> bool:
+                           comment: str, amount: float, timestamp: datetime, user_telegram_login: str, order_id: str) -> bool:
         """
         Добавление записи о свободной продаже
         """
@@ -96,11 +96,13 @@ class GoogleSheetsService:
             
             # Заголовки для листа свободных продаж
             headers = [
-                'Дата и время',
                 'Название услуги', 
                 'Логин клиента',
                 'Комментарий',
-                'Сумма (₽)'
+                'Сумма (₽)',
+                'Менеджер',
+                "Номер заказа",
+                'Дата и время',
             ]
             
             # Получаем или создаем лист
@@ -111,11 +113,13 @@ class GoogleSheetsService:
             
             # Подготавливаем данные для записи
             row_data = [
-                timestamp.strftime('%d.%m.%Y %H:%M:%S'),
                 str(service_name),  # Явно преобразуем в строку
                 str(client_login),  # Явно преобразуем в строку
                 str(comment),       # Явно преобразуем в строку
-                float(amount)       # Явно преобразуем в число
+                float(amount),       # Явно преобразуем в число
+                str(user_telegram_login),
+                timestamp.strftime('%d.%m.%Y %H:%M:%S'),
+                str(order_id),
             ]
             
             # Добавляем отладочную информацию о данных
@@ -135,7 +139,7 @@ class GoogleSheetsService:
     
     def add_product_sale_record(self, game_name: str, console: str, position: str,
                                ps_login: str, comment: str, amount: float, 
-                               timestamp: datetime) -> bool:
+                               timestamp: datetime, user_telegram_login: str, order_id: str) -> bool:
         """
         Добавление записи о продаже товара
         """
@@ -146,13 +150,15 @@ class GoogleSheetsService:
             
             # Заголовки для листа продаж товаров
             headers = [
-                'Дата и время',
                 'Название игры',
                 'Консоль',
                 'Позиция',
                 'Логин PS',
                 'Комментарий',
-                'Сумма (₽)'
+                'Сумма (₽)',
+                'Менеджер',
+                "Номер заказа",
+                'Дата и время',
             ]
             
             # Получаем или создаем лист
@@ -162,13 +168,15 @@ class GoogleSheetsService:
             
             # Подготавливаем данные для записи
             row_data = [
-                timestamp.strftime('%d.%m.%Y %H:%M:%S'),
                 game_name,
                 console,
                 position,
                 ps_login,
                 comment,
-                amount
+                amount,
+                user_telegram_login,
+                timestamp.strftime('%d.%m.%Y %H:%M:%S'),
+                order_id,
             ]
             
             # Добавляем строку
