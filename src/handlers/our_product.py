@@ -3,9 +3,9 @@ from aiogram.types import Message, CallbackQuery
 from aiogram.fsm.context import FSMContext
 import asyncio
 
+from config import PAYMENT_METHOD_NAMES
 from states import OurProductStates
 from keyboards import (
-    get_console_keyboard, 
     get_position_keyboard, 
     get_confirmation_keyboard, 
     get_cancel_keyboard,
@@ -18,7 +18,6 @@ from keyboards import (
     get_back_to_main_after_sale_keyboard
 )
 from models import OurProductData, validate_amount
-from services.google_sheets import GoogleSheetsService
 from services.antilopay import AntilopayAPI
 from services.payment_tracker import PaymentTracker
 import logging
@@ -328,25 +327,6 @@ async def process_amount(message: Message, state: FSMContext):
             await state.update_data(bot_message_id=sent_message.message_id)
 
 
-@router.callback_query(F.data == "cancel")
-async def cancel_operation(callback: CallbackQuery, state: FSMContext):
-    """Отмена текущей операции"""
-    await state.clear()
-    
-    text = (
-        "❌ <b>Операция отменена</b>\n\n"
-        "🧑🏿‍🦽‍➡️ <b>Hello PS Store x Antilopay</b>\n\n"
-        "Выберите тип продажи:"
-    )
-    
-    await callback.message.edit_text(
-        text,
-        reply_markup=get_main_menu_keyboard(),
-        parse_mode="HTML"
-    )
-    await callback.answer("Операция отменена")
-
-
 @router.callback_query(F.data == "confirm", OurProductStates.confirmation)
 async def confirm_our_product(callback: CallbackQuery, state: FSMContext):
     """Подтверждение данных и переход к выбору способа оплаты"""
@@ -416,12 +396,7 @@ async def process_payment_method(callback: CallbackQuery, state: FSMContext):
     await state.set_state(OurProductStates.final_confirmation)
     
     # Переводим код способа оплаты в читаемый вид
-    payment_names = {
-        "CARD_RU": "💳 Банковская карта",
-        "SBER_PAY": "🟢 SberPay", 
-        "SBP": "⚡ СБП"
-    }
-    payment_display = payment_names.get(payment_method, payment_method)
+    payment_display = PAYMENT_METHOD_NAMES.get(payment_method, payment_method)
     
     # Показываем финальное подтверждение
     final_text = (
@@ -496,12 +471,7 @@ async def get_payment_link(callback: CallbackQuery, state: FSMContext):
             order_id = payment_result.get("order_id")
             
             # Переводим код способа оплаты в читаемый вид для отображения
-            payment_names = {
-                "CARD_RU": "💳 Банковская карта",
-                "SBER_PAY": "🟢 SberPay", 
-                "SBP": "⚡ СБП"
-            }
-            payment_display = payment_names.get(data['payment_method'], data['payment_method'])
+            payment_display = PAYMENT_METHOD_NAMES.get(data['payment_method'], data['payment_method'])
             
             success_text = (
                 "✅ <b>Платеж успешно создан!</b>\n"
